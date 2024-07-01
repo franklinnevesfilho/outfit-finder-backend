@@ -1,6 +1,5 @@
-from .user import User
+from .user import User, CreateUser
 from .gender import Gender
-from .dto import *
 
 
 __all__ = ['User', 'CreateUser', 'Gender']

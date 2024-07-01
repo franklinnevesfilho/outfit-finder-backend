@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
+from pydantic import BaseModel, EmailStr
 from models.base import Base
 
 
@@ -14,3 +15,13 @@ class User(Base):
     password = Column(String(200))
     clothes = relationship("Clothes", back_populates='user')
     outfits = relationship("Outfit", back_populates='user')
+
+
+# Pydantic model for creating a user
+class CreateUser(BaseModel):
+    email: EmailStr
+    first_name: str
+    last_name: str
+    password: str
+    gender: str
+
