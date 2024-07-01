@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
+from pydantic import BaseModel
 from models.base import Base
 
 clothes_color_association = Table(
@@ -21,3 +22,14 @@ class Clothes(Base):
     pattern = Column(String(50), ForeignKey('Pattern.name'))
     fabric = Column(String(50), ForeignKey('Fabric.name'))
     colors = relationship('Color', secondary=clothes_color_association)
+
+
+# Pydantic model for creating a clothes
+class CreateClothes(BaseModel):
+    user_id: int
+    image_url: str
+    category: str
+    style: str
+    pattern: str
+    fabric: str
+    colors: list[int]
