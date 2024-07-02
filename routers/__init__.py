@@ -2,12 +2,14 @@ from .main_router import MainRouter
 from .user_router import UserRouter
 from .clothes_router import ClothesRouter
 from .outfit_router import OutfitRouter
+from .auth_router import AuthRouter
 
 routers = [
     MainRouter,
     UserRouter,
     ClothesRouter,
-    OutfitRouter
+    OutfitRouter,
+    AuthRouter
 ]
 
 

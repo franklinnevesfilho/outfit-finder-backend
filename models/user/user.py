@@ -11,7 +11,7 @@ class User(Base):
     email = Column(String(100), unique=True, index=True)
     first_name = Column(String(100))
     last_name = Column(String(100))
-    gender = Column(Integer, ForeignKey('Gender.name'))
+    gender = Column(String, ForeignKey('Gender.name'))
     password = Column(String(200))
     clothes = relationship("Clothes", back_populates='user')
     outfits = relationship("Outfit", back_populates='user')
@@ -24,4 +24,9 @@ class CreateUser(BaseModel):
     last_name: str
     password: str
     gender: str
+
+
+class LoginUser(BaseModel):
+    email: EmailStr
+    password: str
 

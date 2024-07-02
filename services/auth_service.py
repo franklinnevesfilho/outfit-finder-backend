@@ -1,0 +1,41 @@
+from sqlalchemy.orm import Session
+from utils import Service, Response, ResponseFactory
+from models import User, CreateUser, LoginUser
+from pydantic import BaseModel
+
+
+class AuthService:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def login(self, data: LoginUser) -> Response:
+        user = self.db.query(User).filter(User.email == data.email).first()
+        if user is None:
+            return ResponseFactory.generate_not_found_response(errors=["There is no account with this email"])
+        if user.password != data.password:
+            return ResponseFactory.generate_bad_request_response()
+        return ResponseFactory.generate_ok_response(node=user.id)
+
+    def register(self, data: CreateUser) -> Response:
+        user = self.db.query(User).filter(User.email == data.email).first()
+        if user is not None:
+            return ResponseFactory.generate_bad_request_response(errors=["User already exists"])
+
+        user = User(
+            email=data.email,
+            first_name=data.first_name,
+            last_name=data.last_name,
+            password=data.password,
+            gender=data.gender
+        )
+        self.db.add(user)
+        self.db.commit()
+
+        return ResponseFactory.generate_ok_response(node=user.id)
+
+    def get_by_email(self, email: str) -> Response:
+        user = self.db.query(User).filter(User.email == email).first()
+        if user is None:
+            return ResponseFactory.generate_not_found_response()
+        return ResponseFactory.generate_ok_response(node=user.id)
+

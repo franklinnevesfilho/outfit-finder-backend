@@ -3,8 +3,8 @@ from sqlalchemy.orm import sessionmaker
 
 
 class Database:
-    def __init__(self, db_host: str, user: str, password: str, db_name: str):
-        self.db_url = f"mysql+pymysql://{user}:{password}@{db_host}/{db_name}"
+    def __init__(self, db_host: str, db_port: str, user: str, password: str, db_name: str):
+        self.db_url = f"mysql+pymysql://{user}:{password}@{db_host}:{db_port}/{db_name}"
         self.engine = create_engine(self.db_url)
         self.session_local = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 

@@ -1,5 +1,5 @@
-from .user import User, CreateUser
+from .user import User, CreateUser, LoginUser
 from .gender import Gender
 
 
-__all__ = ['User', 'CreateUser', 'Gender']
+__all__ = ['User', 'CreateUser', 'LoginUser', 'Gender']

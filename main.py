@@ -10,7 +10,12 @@ app = FastAPI()
 
 
 # Dependency to get a database connection
-database = Database(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME)
+database = Database(
+    DATABASE_HOST,
+    DATABASE_PORT,
+    DATABASE_USER,
+    DATABASE_PASSWORD,
+    DATABASE_NAME)
 
 
 # Dependency to get a database session

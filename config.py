@@ -2,9 +2,9 @@ import os
 
 #  Database configuration
 DATABASE_HOST = os.getenv('DB_HOST', 'localhost')
-DATABASE_PORT = os.getenv('DB_PORT', '3306')
+DATABASE_PORT = os.getenv('DB_PORT', '3308')
 DATABASE_USER = os.getenv('DB_USER', 'root')
-DATABASE_PASSWORD = os.getenv('DB_PASSWORD', 'password')
+DATABASE_PASSWORD = os.getenv('DB_PASSWORD', 'rootpassword')
 DATABASE_NAME = os.getenv('DB_NAME', 'outfit_finder')
 
 # S3 configuration
