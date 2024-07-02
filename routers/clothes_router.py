@@ -3,6 +3,22 @@ from services import ClothesService
 from utils import Router
 from models import CreateClothes
 
+""" Clothes Router
+
+This Router is responsible for handling the routes related to the Clothes model.
+This router uses the ClothesService to handle the business logic.
+
+The ClothesRouter contains the following methods:
+    - get_user_clothes: get all clothes from a user
+    - create_clothes: create a new clothes
+    - get_all: get all clothes
+    - get_by_id: get clothes by id
+    - delete: delete clothes by id
+    - update: update clothes by id
+
+@Author: Franklin Neves Filho
+"""
+
 
 class ClothesRouter(Router):
 

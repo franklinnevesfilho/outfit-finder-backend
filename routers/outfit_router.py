@@ -3,6 +3,22 @@ from services import OutfitService
 from utils import Router
 from models import CreateOutfit
 
+""" Outfit Router
+
+This Router is responsible for handling the routes related to the Outfit model.
+This router uses the OutfitService to handle the business logic.
+
+The OutfitRouter contains the following methods:
+    - get_user_outfits: get all outfits from a user
+    - create_outfit: create a new outfit
+    - get_all: get all outfits
+    - get_by_id: get outfit by id
+    - delete: delete outfit by id
+    - update: update outfit by id
+    
+@Author: Franklin Neves Filho
+"""
+
 
 class OutfitRouter(Router):
 

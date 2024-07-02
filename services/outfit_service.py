@@ -4,10 +4,38 @@ from utils import Service, Response, ResponseFactory
 from sqlalchemy.orm.exc import NoResultFound
 
 
+""" Outfit Service
+
+The Outfit Service class is responsible for handling all the business logic for the outfits
+within the application.
+
+The OutfitService is responsible for joining the clothes to the outfit.
+
+The OutfitService class contains the following methods:
+    - get_user_outfits: get all outfits from a user
+    - get_by_id: get outfit by id
+    - get_all: get all outfits
+    - create: create an outfit
+    - update: update an outfit
+    - delete: delete an outfit
+    - join_outfit_clothes: join the clothes to the outfit
+
+@Author: Franklin Neves Filho
+"""
+
+
 class OutfitService(Service):
 
-
     def get_user_outfits(self, user_id: int) -> Response:
+        """
+        Get all outfits from a user
+        :param user_id:
+        :return: {
+            node: List[Outfit],
+            errors: List[str]
+        }
+        """
+
         outfits = self.db.query(Outfit).filter(Outfit.user_id == user_id).all()
         if not outfits:
             return ResponseFactory.generate_not_found_response()
@@ -17,6 +45,15 @@ class OutfitService(Service):
         return ResponseFactory.generate_ok_response(node=outfits)
 
     def get_by_id(self, item_id: int) -> Response:
+        """
+        Get outfit by id
+        :param item_id: int
+        :return: {
+            node: Outfit,
+            errors: List[str]
+        }
+        """
+
         try:
             outfit = self.db.query(Outfit).get(item_id)
             outfit = self.join_outfit_clothes(outfit)
@@ -26,6 +63,14 @@ class OutfitService(Service):
             return ResponseFactory.generate_not_found_response()
 
     def get_all(self) -> Response:
+        """
+        Get all outfits
+        :return: {
+            node: List[Outfit],
+            errors: List[str]
+        }
+        """
+
         outfits = self.db.query(Outfit).all()
         if not outfits:
             return ResponseFactory.generate_not_found_response()
@@ -35,6 +80,15 @@ class OutfitService(Service):
         return ResponseFactory.generate_ok_response(node=outfits)
 
     def create(self, data: CreateOutfit) -> Response:
+        """
+        Create an outfit
+        :param data:
+        :return: {
+            node: Outfit,
+            errors: List[str]
+        }
+        """
+
         # Check if user exists
         user_exists = self.db.query(User).filter(User.id == data.user_id).first()
         if not user_exists:
@@ -78,9 +132,17 @@ class OutfitService(Service):
         return ResponseFactory.generate_created_response(node=outfit)
 
     def update(self, item_id: int, data: CreateOutfit) -> Response:
-        outfit = self.db.query(Outfit).get(item_id)
+        """
+        Update an outfit
+        :param item_id:
+        :param data:
+        :return: {
+            node: Outfit,
+            errors: List[str]
+        }
+        """
 
-        # Check if clothes exist
+        outfit = self.db.query(Outfit).get(item_id)
         clothes = []
         for cloth in data.clothes:
             cloth_exists = self.db.query(Clothes).filter(Clothes.id == cloth).first()
@@ -99,6 +161,15 @@ class OutfitService(Service):
         return ResponseFactory.generate_ok_response(node=outfit)
 
     def delete(self, item_id: int) -> Response:
+        """
+        Delete an outfit
+        :param item_id:
+        :return: {
+            node: str,
+            errors: List[str]
+        }
+        """
+
         outfit = self.db.query(Outfit).get(item_id)
         if outfit is None:
             return ResponseFactory.generate_not_found_response()

@@ -2,14 +2,18 @@ from .main_router import MainRouter
 from .user_router import UserRouter
 from .clothes_router import ClothesRouter
 from .outfit_router import OutfitRouter
-from .auth_router import AuthRouter
+
+"""
+This file is used to import all routers and register them in the register_routers function
+
+@Author: Franklin Neves Filho
+"""
 
 routers = [
     MainRouter,
     UserRouter,
     ClothesRouter,
     OutfitRouter,
-    AuthRouter
 ]
 
 

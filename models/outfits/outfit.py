@@ -2,7 +2,24 @@ from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from models.base import Base
-from models.clothes.clothes import Clothes
+
+
+""" Outfit Model
+
+This file contains the models used for the Outfit entity in the database.
+There is a table which joins the clothes and outfits tables, called outfits_clothes.
+
+the Outfit consists of:
+    - id: the id of the outfit
+    - user_id: the id of the user that created the outfit
+    - occasion: the occasion for the outfit
+    - weather: the weather for the outfit
+    - season: the season for the outfit
+    - clothes: the clothes that are part of the outfit
+    
+@Author: Franklin Neves Filho
+"""
+
 
 outfit_clothes_association = Table(
     'outfits_clothes', Base.metadata,

@@ -1,8 +1,28 @@
 from sqlalchemy.orm import joinedload
-from models import Clothes, CreateClothes, Category, Style, Pattern, Fabric, Color
+from models import Clothes, CreateClothes, Category, Style, Pattern, Fabric, Color, Outfit
 from utils import Service, Response, ResponseFactory
 from typing import Type
 from sqlalchemy.orm.exc import NoResultFound
+
+
+""" Clothes Service
+
+This module contains the Clothes Service class which is responsible
+for handling all the business logic related to the Clothes model.
+
+The clothes service is responsible for joining the colors to the clothes.
+
+The ClothesService class contains the following methods:
+    - get_user_clothes: get all clothes from a user
+    - get_by_id: get clothes by id
+    - get_all: get all clothes
+    - create: create clothes
+    - update: update clothes
+    - delete: delete clothes
+    - join_clothes_colors: join the colors to the clothes
+
+@Author: Franklin Neves Filho
+"""
 
 
 class ClothesService(Service):

@@ -1,6 +1,22 @@
 from utils import Service, Response, ResponseFactory
 from models import User, CreateUser, LoginUser
 
+"""Auth Service
+
+This service handles all the business logic related to the authentication of the user.
+
+It uses the JwtService class to generate tokens and verify activities to the api
+
+The AuthService class contains the following methods:
+    - login: login the user
+    - register: register the user
+    - get_by_email: get user by email
+    -reset_password: reset the user password
+    -logout: logout the user
+    
+@Author: Franklin Neves Filho
+"""
+
 
 class AuthService (Service):
 

@@ -1,3 +1,8 @@
+from utils import Service, Response, ResponseFactory
+from models import User, CreateUser
+from pydantic import BaseModel
+
+
 """
 This module contains the User Service class which is responsible
 for handling all the business logic related to the User model.
@@ -12,12 +17,8 @@ The UserService class contains the following methods:
     - delete
     - get_by_email
 
+@Author: Franklin Neves Filho
 """
-
-
-from utils import Service, Response, ResponseFactory
-from models import User, CreateUser
-from pydantic import BaseModel
 
 
 class UserResponse(BaseModel):

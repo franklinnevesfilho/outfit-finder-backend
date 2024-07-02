@@ -4,6 +4,15 @@ from pydantic import BaseModel, EmailStr
 from models.base import Base
 
 
+""" User Model / Create User Model
+
+This file contains the User model and the CreateUser model.
+Which are used to represent the User entity in the database and to create a new User.
+
+@Author: Franklin Neves Filho
+"""
+
+
 class User(Base):
     __tablename__ = 'User'
 

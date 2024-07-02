@@ -3,6 +3,26 @@ from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from models.base import Base
 
+
+""" Clothes Model
+
+This file contains the models used for the Clothes entity in the database.
+There is a table which joins the clothes and colors tables, called clothes_colors.
+
+the Clothes consists of:
+    - id: the id of the clothes
+    - user_id: the id of the user that created the clothes
+    - image_url: the url of the image of the clothes
+    - category: the category of the clothes
+    - style: the style of the clothes
+    - pattern: the pattern of the clothes
+    - fabric: the fabric of the clothes
+    - colors: the colors of the clothes
+    
+@Author: Franklin Neves Filho
+"""
+
+
 clothes_color_association = Table(
     'clothes_colors', Base.metadata,
     Column('clothes_id', Integer, ForeignKey('Clothes.id')),
