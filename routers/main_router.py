@@ -7,7 +7,9 @@ class MainRouter(Router):
         super().__init__(services)
 
     def getRoutes(self):
-        router = APIRouter()
+        router = APIRouter(
+            tags=["main"]
+        )
 
         @router.get(self.endpoint)
         async def read_root():

@@ -1,24 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+from sqlalchemy.orm import Session
 
 
 class Service(ABC):
-    @abstractmethod
-    def get_by_id(self, item_id):
-        pass
-
-    @abstractmethod
-    def get_all(self):
-        pass
-
-    @abstractmethod
-    def create(self, data):
-        pass
-
-    @abstractmethod
-    def update(self, item_id, data):
-        pass
-
-    @abstractmethod
-    def delete(self, data):
-        pass
+    def __init__(self, db: Session):
+        self.db = db
 

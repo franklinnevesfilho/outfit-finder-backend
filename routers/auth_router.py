@@ -10,15 +10,18 @@ class AuthRouter(Router):
         super().__init__(services, "/auth")
 
     def getRoutes(self):
-        router = APIRouter()
+        router = APIRouter(
+            prefix=self.endpoint,
+            tags=["auth"]
+        )
         auth_service: AuthService = self.getService("auth_service")
 
-        @router.post(f"{self.endpoint}/login")
+        @router.post("/login")
         async def login(login_data: LoginUser):
             print("login_data", login_data)
             return auth_service.login(login_data)
 
-        @router.post(f"{self.endpoint}/register")
+        @router.post("/register")
         async def register(register_data: CreateUser):
             return auth_service.register(register_data)
 

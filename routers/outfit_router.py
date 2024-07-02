@@ -10,34 +10,37 @@ class OutfitRouter(Router):
         super().__init__(services, "/outfit")
 
     def getRoutes(self):
-        router = APIRouter()
+        router = APIRouter(
+            prefix=self.endpoint,
+            tags=["outfit"]
+        )
         outfit_service: OutfitService = self.getService("outfit_service")
 
-        @router.get(self.endpoint)
+        @router.get("/")
         async def read_root():
             return {"Hello": "World"}
 
-        @router.get(self.endpoint+"/user/{user_id}")
+        @router.get("/user/{user_id}")
         async def get_user_outfits(user_id: int):
             return outfit_service.get_user_outfits(user_id)
 
-        @router.post(f"{self.endpoint}/create")
+        @router.post("/create")
         async def create_outfit(outfit: CreateOutfit):
             return outfit_service.create(outfit)
 
-        @router.get(f"{self.endpoint}/all")
+        @router.get("/all")
         async def get_all():
             return outfit_service.get_all()
 
-        @router.get(self.endpoint + "/get/{outfit_id}")
+        @router.get("/get/{outfit_id}")
         async def get_by_id(outfit_id: int):
             return outfit_service.get_by_id(outfit_id)
 
-        @router.delete(self.endpoint + "/delete/{outfit_id}")
+        @router.delete("/delete/{outfit_id}")
         async def delete(outfit_id: int):
             return outfit_service.delete(outfit_id)
 
-        @router.put(self.endpoint + "/update/{outfit_id}")
+        @router.put("/update/{outfit_id}")
         async def update(outfit_id: int, outfit: CreateOutfit):
             return outfit_service.update(outfit_id, outfit)
 

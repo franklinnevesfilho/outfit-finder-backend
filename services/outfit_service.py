@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 from models import (Outfit, CreateOutfit, User, Clothes, Occasion, Season, Weather)
 from typing import Type
 from utils import Service, Response, ResponseFactory
@@ -7,8 +6,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 class OutfitService(Service):
 
-    def __init__(self, db: Session):
-        self.db = db
 
     def get_user_outfits(self, user_id: int) -> Response:
         outfits = self.db.query(Outfit).filter(Outfit.user_id == user_id).all()

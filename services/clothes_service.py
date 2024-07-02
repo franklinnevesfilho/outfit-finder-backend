@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import joinedload
 from models import Clothes, CreateClothes, Category, Style, Pattern, Fabric, Color
 from utils import Service, Response, ResponseFactory
 from typing import Type
@@ -6,8 +6,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 
 class ClothesService(Service):
-    def __init__(self, db: Session):
-        self.db = db
 
     def get_user_clothes(self, user_id: int) -> Response:
         clothes = self.db.query(Clothes).filter(Clothes.user_id == user_id).all()

@@ -10,22 +10,25 @@ class UserRouter(Router):
         super().__init__(services, "/users")
 
     def getRoutes(self):
-        router = APIRouter()
+        router = APIRouter(
+            prefix=self.endpoint,
+            tags=["user"]
+        )
         user_service: UserService = self.getService("user_service")
 
         @router.get(self.endpoint)
         async def read_root():
             return {"Hello": "World"}
 
-        @router.post(f"{self.endpoint}/create")
+        @router.post("/create")
         async def create_user(user: CreateUser):
             return user_service.create(user)
 
-        @router.get(f"{self.endpoint}/all")
+        @router.get("/all")
         async def get_all():
             return user_service.get_all()
 
-        @router.get(self.endpoint+"/get/{user_email}")
+        @router.get("/get/{user_email}")
         async def get_by_email(user_email: str):
             return user_service.get_by_email(user_email)
 

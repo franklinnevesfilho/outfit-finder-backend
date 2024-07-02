@@ -15,7 +15,6 @@ The UserService class contains the following methods:
 """
 
 
-from sqlalchemy.orm import Session
 from utils import Service, Response, ResponseFactory
 from models import User, CreateUser
 from pydantic import BaseModel
@@ -30,8 +29,6 @@ class UserResponse(BaseModel):
 
 
 class UserService(Service):
-    def __init__(self, db: Session):
-        self.db = db
 
     def get_by_id(self, item_id: int) -> Response:
         user = self.db.query(User).get(item_id)

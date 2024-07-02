@@ -1,12 +1,11 @@
-from sqlalchemy.orm import Session
 from utils import Service, Response, ResponseFactory
 from models import User, CreateUser, LoginUser
-from pydantic import BaseModel
 
 
-class AuthService:
-    def __init__(self, db: Session):
-        self.db = db
+class AuthService (Service):
+
+    def __init__(self, db):
+        super().__init__(db)
 
     def login(self, data: LoginUser) -> Response:
         user = self.db.query(User).filter(User.email == data.email).first()
@@ -38,4 +37,3 @@ class AuthService:
         if user is None:
             return ResponseFactory.generate_not_found_response()
         return ResponseFactory.generate_ok_response(node=user.id)
-
