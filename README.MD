@@ -1,5 +1,8 @@
 # Outfit Finder API
 
+### Things to know
+I'm using Python 3.9
+
 ### initial setup
 - Clone the repository
 - use the 'requirements.txt' file to install the required packages
