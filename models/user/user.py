@@ -1,6 +1,9 @@
+from typing import Any
+from typing_extensions import Self
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from models.base import Base
 
 
@@ -28,7 +31,7 @@ class User(Base):
 
 # Pydantic model for creating a user
 class CreateUser(BaseModel):
-    email: EmailStr
+    email: str
     first_name: str
     last_name: str
     password: str
@@ -36,6 +39,6 @@ class CreateUser(BaseModel):
 
 
 class LoginUser(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 

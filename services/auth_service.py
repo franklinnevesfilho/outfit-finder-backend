@@ -1,4 +1,4 @@
-from utils import Service, Response, ResponseFactory
+from utils import Service, Response, ResponseFactory, JwtFactory
 from models import User, CreateUser, LoginUser
 
 """Auth Service
@@ -10,9 +10,7 @@ It uses the JwtService class to generate tokens and verify activities to the api
 The AuthService class contains the following methods:
     - login: login the user
     - register: register the user
-    - get_by_email: get user by email
-    -reset_password: reset the user password
-    -logout: logout the user
+    - reset_password: reset the user password
     
 @Author: Franklin Neves Filho
 """
@@ -22,14 +20,19 @@ class AuthService (Service):
 
     def __init__(self, db):
         super().__init__(db)
+        self.jwt = JwtFactory()
 
     def login(self, data: LoginUser) -> Response:
+        errorMsg = 'Invalid email or password'
+
         user = self.db.query(User).filter(User.email == data.email).first()
         if user is None:
-            return ResponseFactory.generate_not_found_response(errors=["There is no account with this email"])
+            return ResponseFactory.generate_not_found_response(errors=[errorMsg])
         if user.password != data.password:
-            return ResponseFactory.generate_bad_request_response()
-        return ResponseFactory.generate_ok_response(node=user.id)
+            return ResponseFactory.generate_bad_request_response(errors=[errorMsg])
+
+        token = self.jwt.generate_token({'user_id': user.id})
+        return ResponseFactory.generate_ok_response(node=token)
 
     def register(self, data: CreateUser) -> Response:
         user = self.db.query(User).filter(User.email == data.email).first()
@@ -46,10 +49,12 @@ class AuthService (Service):
         self.db.add(user)
         self.db.commit()
 
-        return ResponseFactory.generate_ok_response(node=user.id)
+        token = self.jwt.generate_token({'user_id': user.id})
+        return ResponseFactory.generate_ok_response(node=token)
 
-    def get_by_email(self, email: str) -> Response:
-        user = self.db.query(User).filter(User.email == email).first()
-        if user is None:
-            return ResponseFactory.generate_not_found_response()
-        return ResponseFactory.generate_ok_response(node=user.id)
+    def reset_password(self, token: str, new_password: str) -> Response:
+        user_id = self.jwt.decode_token(token)['user_id']
+        user = self.db.query(User).get(user_id)
+        user.password = new_password
+        self.db.commit()
+        return ResponseFactory.generate_ok_response()
