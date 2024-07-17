@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mysql:5.7
     container_name: mysql-server
     restart: unless-stopped
     environment:
@@ -14,6 +12,8 @@ services:
       MYSQL_PASSWORD: password
     ports:
       - "3308:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   minio:
     image: minio/minio
@@ -26,3 +26,22 @@ services:
       - "9000:9000"
       - "9001:9001"
     command: server /data --console-address ":9001"
+
+  setup:
+    image: python:3.8
+    depends_on:
+      - mysql
+      - minio
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rootpassword
+      MYSQL_DATABASE: outfit_finder
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadminpassword
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ["sh", "-c", "pip install -r /scripts/requirements.txt && python /scripts/init.py"]

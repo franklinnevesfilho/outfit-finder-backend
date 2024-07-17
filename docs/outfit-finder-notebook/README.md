@@ -1,27 +1,45 @@
 # Outfit Finder Notebook
 #### By: [Franklin Neves Filho](https://www.franklinnevesfilho.com/)
 
-This notebook demonstrates how I used the `blah` dataset to create a Machine learning model that suggests the users outfits.
+This notebook demonstrates how I used the [Fashion Product Images Dataset](https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset) to create a Machine learning model that suggests the users outfits.
 
 ## Dataset
 
-The dataset used in this notebook is the `blah` dataset. It contains the following columns:
+It contains the following columns:
 ```
-- user_id: The user's unique identifier
-- outfit_id: The outfit's unique identifier
+- id
+- gender
+- masterCategory
+- subCategory
+- articleType
+- baseColour
+- season
+- year
+- usage
+```
+After processing the data, removing uneccesary columns and renaming others, the dataset looks like this:
+```
+- gender
+- category
+- style
+- color
+- season
+- usage
 ```
 
-## Model
+## About The Model
+The model uses the users information (gender and closet) to suggest clothing items based on a specific occasion.
 
-The model used in this notebook is a `blah` model.
+This is achieved by using the `KNeighborsClassifier` from the `sklearn` library, alongside the 'StandardScaler' to normalize the data.
 
-#### Usage
+The model is then trained using the `fit` method and evaluated using the `score` method.
 
-To use this notebook, run the cells in order.
+The model is used by getting the probability that a clothing item has to a specific occasion using the `predict_proba` method.
 
-### Evaluation
+And with this information my program is able to suggest clothing items that have a probability higher than 0.5.
 
-The model achieved an accuracy of `0.99`.
+## Results
+The model achieved an accuracy of `0.82`.
 
 ### Conclusion
 
@@ -35,4 +53,19 @@ This could be done using a Deep Learning approach learning the users preferences
 
 
 # License
+```
+ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+                    Version 2, December 2004 
+
+ Copyright (C) 2024 Franklin Neves Filho 
+
+ Everyone is permitted to copy and distribute verbatim or modified 
+ copies of this license document, and changing it is allowed as long 
+ as the name is changed. 
+
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+```
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
