@@ -4,6 +4,8 @@ from utils import Service, Response, ResponseFactory
 from .jwt_service import JwtService
 from sqlalchemy.orm.exc import NoResultFound
 
+from config import logger
+
 
 """ Clothes Service
 
@@ -31,12 +33,15 @@ class ClothesService(Service):
         self.jwt = JwtService()
 
     def get_user_clothes(self, token: str) -> Response:
+
         user_id = self.jwt.decode_token(token)['user_id']
+        logger.info(f"User ID: {user_id}")
 
         if user_id is None:
             return ResponseFactory.generate_unauthorized_response()
 
         clothes = self.db.query(Clothes).filter(Clothes.user_id == user_id).all()
+        logger.info(f"Clothes: {clothes}")
         return ResponseFactory.generate_ok_response(node=clothes)
 
     def get_by_id(self, item_id: int) -> Response:
