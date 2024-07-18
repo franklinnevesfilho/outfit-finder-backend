@@ -67,10 +67,7 @@ INSERT INTO Pattern (name) VALUES
                                ('Striped'),
                                ('Other');
 
-CREATE TABLE IF NOT EXISTS Style(
-    id SMALLINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) UNIQUE NOT NULL
-);
+
 
 CREATE TABLE IF NOT EXISTS Fabric(
     id SMALLINT PRIMARY KEY AUTO_INCREMENT,
@@ -98,6 +95,31 @@ INSERT INTO Fabric (name) VALUES
                               ('Yarn'),
                               ('Blend'),
                               ('Other');
+
+
+CREATE TABLE IF NOT EXISTS Style(
+    id SMALLINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) UNIQUE NOT NULL
+);
+
+INSERT INTO Style (name) VALUES
+                             ('shirts') ,
+                             ('tshirts'),
+                             ('tops'),
+                             ('sweatshirts'),
+                             ('swimwear'),
+                             ('jackets'),
+                             ('sweaters'),
+                             ('tunics'),
+                             ('jeans'),
+                             ('shorts'),
+                             ('skirts'),
+                             ('leggings'),
+                             ('tights'),
+                             ('jeggings'),
+                             ('dresses'),
+                             ('rompers');
+
 
 CREATE TABLE If NOT EXISTS Category(
     id SMALLINT PRIMARY KEY AUTO_INCREMENT,
@@ -188,6 +210,7 @@ CREATE TABLE IF NOT EXISTS Clothes(
     pattern VARCHAR(50) NOT NULL,
     style VARCHAR(50) NOT NULL,
     fabric VARCHAR(50) NOT NULL,
+    color VARCHAR(50) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES User(id)
     ON DELETE CASCADE,
     FOREIGN KEY (category) REFERENCES Category(name)
@@ -197,17 +220,11 @@ CREATE TABLE IF NOT EXISTS Clothes(
     FOREIGN KEY (style) REFERENCES Style(name)
     ON UPDATE CASCADE,
     FOREIGN KEY (fabric) REFERENCES Fabric(name)
+    ON UPDATE CASCADE,
+    FOREIGN KEY (color) REFERENCES Color(name)
     ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS clothes_colors(
-    clothes_id MEDIUMINT,
-    color_id SMALLINT,
-    PRIMARY KEY (clothes_id, color_id),
-    FOREIGN KEY (clothes_id) REFERENCES Clothes(id)
-    ON DELETE CASCADE,
-    FOREIGN KEY (color_id) REFERENCES Color(id)
-);
 
 CREATE TABLE IF NOT EXISTS Outfit(
     id MEDIUMINT PRIMARY KEY AUTO_INCREMENT,

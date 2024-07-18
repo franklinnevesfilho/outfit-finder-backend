@@ -1,7 +1,7 @@
 from sqlalchemy.orm import joinedload
 from models import Clothes, CreateClothes, Category, Style, Pattern, Fabric, Color, Outfit
 from utils import Service, Response, ResponseFactory
-from typing import Type
+from .jwt_service import JwtService
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -26,25 +26,29 @@ The ClothesService class contains the following methods:
 
 
 class ClothesService(Service):
+    def __init__(self, db):
+        super().__init__(db)
+        self.jwt = JwtService()
 
-    def get_user_clothes(self, user_id: int) -> Response:
+    def get_user_clothes(self, token: str) -> Response:
+        user_id = self.jwt.decode_token(token)['user_id']
+
+        if user_id is None:
+            return ResponseFactory.generate_unauthorized_response()
+
         clothes = self.db.query(Clothes).filter(Clothes.user_id == user_id).all()
-        clothes_response = [self.join_clothes_colors(cloth) for cloth in clothes]
-        return ResponseFactory.generate_ok_response(node=clothes_response)
+        return ResponseFactory.generate_ok_response(node=clothes)
 
     def get_by_id(self, item_id: int) -> Response:
         clothes = self.db.query(Clothes).get(item_id)
         if clothes is None:
             return ResponseFactory.generate_not_found_response()
-        clothes = self.join_clothes_colors(clothes)
         return ResponseFactory.generate_ok_response(node=clothes)
 
     def get_all(self) -> Response:
         clothes = self.db.query(Clothes).options(joinedload(Clothes.colors)).all()
         if not clothes:
             return ResponseFactory.generate_not_found_response()
-
-        clothes = [self.join_clothes_colors(cloth) for cloth in clothes]
 
         return ResponseFactory.generate_ok_response(node=clothes)
 
@@ -69,16 +73,27 @@ class ClothesService(Service):
         if not fabric_exists:
             return ResponseFactory.generate_error_response(message="Fabric does not exist")
 
-        # Check if colors exist
-        colors = []
-        for color in data.colors:
-            color_exists = self.db.query(Color).filter(Color.id == color).first()
-            if not color_exists:
-                return ResponseFactory.generate_error_response(message="Color does not exist")
-            colors.append(color_exists)
+        # Check if color exist
+        color_exists = self.db.query(Color).filter(Color.name == data.color).first()
+        if not color_exists:
+            return ResponseFactory.generate_error_response(message="Color does not exist")
 
-        clothes = Clothes(**data.dict())
-        clothes.colors = colors
+        # ensure that the clothes is not repeated
+        clothes = self.db.query(Clothes).filter(Clothes.name == data.name).first()
+        if clothes:
+            return ResponseFactory.generate_error_response(message="Clothes already exists")
+
+        # Create a new Clothes object
+        clothes = Clothes(
+            user_id=data.user_id,
+            name=data.name,
+            image_url=data.image_url,
+            category=data.category,
+            style=data.style,
+            pattern=data.pattern,
+            fabric=data.fabric,
+            color=data.color
+        )
 
         self.db.add(clothes)
         self.db.commit()
@@ -91,11 +106,6 @@ class ClothesService(Service):
         except NoResultFound:
             return ResponseFactory.generate_not_found_response()
 
-        # Fetch the Color objects based on the provided color IDs
-        color_objects = self.db.query(Color).filter(Color.id.in_(data.colors)).all()
-        if len(color_objects) != len(data.colors):
-            return ResponseFactory.generate_error_response(message="Some colors do not exist")
-
         # Update the Clothes object
         clothes.user_id = data.user_id
         clothes.image_url = data.image_url
@@ -103,7 +113,7 @@ class ClothesService(Service):
         clothes.style = data.style
         clothes.pattern = data.pattern
         clothes.fabric = data.fabric
-        clothes.colors = color_objects  # Set with Color objects
+        clothes.color = data.color
 
         self.db.commit()
 
@@ -122,16 +132,3 @@ class ClothesService(Service):
         self.db.commit()
 
         return ResponseFactory.generate_ok_response(node="Clothes deleted successfully")
-
-    @staticmethod
-    def join_clothes_colors(clothes: Type[Clothes]):
-        return {
-            "id": clothes.id,
-            "user_id": clothes.user_id,
-            "image_url": clothes.image_url,
-            "category": clothes.category,
-            "style": clothes.style,
-            "pattern": clothes.pattern,
-            "fabric": clothes.fabric,
-            "colors": [color.name for color in clothes.colors]
-        }

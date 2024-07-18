@@ -36,9 +36,9 @@ class OutfitRouter(Router):
         async def read_root():
             return {"Hello": "World"}
 
-        @router.get("/user/{user_id}")
-        async def get_user_outfits(user_id: int):
-            return outfit_service.get_user_outfits(user_id)
+        @router.get("/user/{token}")
+        async def get_user_outfits(token: str):
+            return outfit_service.get_user_outfits(token)
 
         @router.post("/create")
         async def create_outfit(outfit: CreateOutfit):

@@ -1,4 +1,6 @@
 from utils import Service, Response, ResponseFactory
+from .jwt_service import JwtService
+from .ai_service import AIService
 from models import User, CreateUser
 from pydantic import BaseModel
 
@@ -31,6 +33,10 @@ class UserResponse(BaseModel):
 
 class UserService(Service):
 
+    def __init__(self, db=None):
+        super().__init__(db)
+        self.jwt = JwtService()
+
     def get_by_id(self, item_id: int) -> Response:
         user = self.db.query(User).get(item_id)
         if user is None:
@@ -59,16 +65,17 @@ class UserService(Service):
         return ResponseFactory.generate_ok_response(node=user_response)
 
     def create(self, data: CreateUser) -> Response:
-        user_found = self.db.query(User).filter(User.email == data.email).first()
+        try:
+            user_found = self.db.query(User).filter(User.email == data.email)
 
-        if user_found is not None:
-            return ResponseFactory.generate_bad_request_response(errors=["User already exists"])
+            if user_found is not None:
+                return ResponseFactory.generate_bad_request_response(errors=["User already exists"])
 
-        user = User(**data.dict())
-        self.db.add(user)
-        self.db.commit()
+            user = User(**data.dict())
+            self.db.add(user)
+            self.db.commit()
 
-        return ResponseFactory.generate_created_response(
+            return ResponseFactory.generate_created_response(
             node=UserResponse(
                 id=user.id,
                 email=user.email,
@@ -76,22 +83,30 @@ class UserService(Service):
                 last_name=user.last_name,
                 gender=user.gender
             ))
+        except Exception as e:
+            return ResponseFactory.generate_bad_request_response(errors=[str(e)])
 
-    def update(self, item_id: int, data: CreateUser) -> Response:
-        user = self.get_by_id(item_id)
+    def update(self, token: str, data: CreateUser) -> Response:
+
+        user_id = self.jwt.decode_token(token)['user_id']
+
+        user = self.get_by_id(user_id)
         if user is None:
             return Response(errors=["User not found"], status=404)
 
-        self.db.query(User).filter(User.id == item_id).update(data.dict())
+        self.db.query(User).filter(User.id == user_id).update(data.model_dump())
         self.db.commit()
         return ResponseFactory.generate_ok_response(node="User updated successfully")
 
-    def delete(self, item_id: int) -> Response:
-        user = self.get_by_id(item_id)
+    def delete(self, token: str) -> Response:
+
+        user_id = self.jwt.decode_token(token)['user_id']
+
+        user = self.get_by_id(user_id)
         if user is None:
             return Response(errors=["User not found"], status=404)
 
-        self.db.query(User).filter(User.id == item_id).delete()
+        self.db.query(User).filter(User.id == user_id).delete()
         self.db.commit()
         return ResponseFactory.generate_ok_response(node="User deleted successfully")
 
@@ -107,4 +122,13 @@ class UserService(Service):
                 last_name=user.last_name,
                 gender=user.gender
             ))
+
+    def get_predictions(self, token: str, usage: str):
+        user_id = self.jwt.decode_token(token)['user_id']
+        user = self.db.query(User).get(user_id)
+        if user is None:
+            return ResponseFactory.generate_not_found_response(errors=["User not found"])
+
+        return AIService.predict(user, usage)
+
 

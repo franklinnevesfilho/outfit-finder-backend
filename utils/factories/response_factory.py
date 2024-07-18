@@ -1,3 +1,4 @@
+from utils.interfaces.singleton_pattern import SingletonMeta
 from .response import Response
 
 status_codes = {

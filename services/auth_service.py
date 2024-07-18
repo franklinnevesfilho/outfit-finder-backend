@@ -1,4 +1,5 @@
-from utils import Service, Response, ResponseFactory, JwtFactory
+from utils import Service, Response, ResponseFactory
+from .jwt_service import JwtService
 from models import User, CreateUser, LoginUser
 
 """Auth Service
@@ -20,7 +21,7 @@ class AuthService (Service):
 
     def __init__(self, db):
         super().__init__(db)
-        self.jwt = JwtFactory()
+        self.jwt = JwtService()
 
     def login(self, data: LoginUser) -> Response:
         errorMsg = 'Invalid email or password'
@@ -53,8 +54,12 @@ class AuthService (Service):
         return ResponseFactory.generate_ok_response(node=token)
 
     def reset_password(self, token: str, new_password: str) -> Response:
+
         user_id = self.jwt.decode_token(token)['user_id']
         user = self.db.query(User).get(user_id)
         user.password = new_password
         self.db.commit()
         return ResponseFactory.generate_ok_response()
+
+    def get_token_data(self, token: str) -> dict:
+        return self.jwt.decode_token(token)

@@ -1,13 +1,9 @@
-"""
-This class is meant to take in a dictionary of data and return a JWT token
-"""
-
-from datetime import datetime, timedelta
 import jwt
+from datetime import datetime, timedelta
 from utils.security.jwt_key_generator import KeyGeneratorUtil
 
 
-class JwtFactory:
+class JwtService:
 
     def __init__(self):
         self.keys = KeyGeneratorUtil.generate_keys()
@@ -27,8 +23,8 @@ class JwtFactory:
 
     def decode_token(self, token: str) -> dict:
         """
-        Decode a jwt token
-        :param token:
+        Verify and decode a jwt token
+        :param token: jwt token
         :return: dictionary with the decoded data
         """
         return jwt.decode(token, self.public_key, algorithms=[self.algorithm])

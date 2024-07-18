@@ -1,4 +1,5 @@
 from models import (Outfit, CreateOutfit, User, Clothes, Occasion, Season, Weather)
+from .jwt_service import JwtService
 from typing import Type
 from utils import Service, Response, ResponseFactory
 from sqlalchemy.orm.exc import NoResultFound
@@ -26,16 +27,23 @@ The OutfitService class contains the following methods:
 
 class OutfitService(Service):
 
-    def get_user_outfits(self, user_id: int) -> Response:
+    def __init__(self, db=None):
+        super().__init__(db)
+        self.jwt = JwtService()
+
+    def get_user_outfits(self, token: str) -> Response:
         """
         Get all outfits from a user
-        :param user_id:
+        :param token:
         :return: {
             node: List[Outfit],
             errors: List[str]
         }
         """
+        user_id = self.jwt.decode_token(token)['user_id']
 
+        if user_id is None:
+            return ResponseFactory.generate_unauthorized_response()
         outfits = self.db.query(Outfit).filter(Outfit.user_id == user_id).all()
         if not outfits:
             return ResponseFactory.generate_not_found_response()

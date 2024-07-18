@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from services import UserService
+from services import UserService, AIService
 from utils import Router
 
 
@@ -30,6 +30,7 @@ class UserRouter(Router):
             tags=["user"]
         )
         user_service: UserService = self.getService("user_service")
+        ai_service: AIService = self.getService("ai_service")
 
         @router.get("/")
         async def read_root():
@@ -44,6 +45,10 @@ class UserRouter(Router):
             print("body", body)
             email = body['email']
             return {"email": email}
+
+        @router.get("/get-prediction/{usage}/{token}")
+        async def get_prediction(usage: str, token: str):
+            return user_service.get_predictions(token, usage)
 
         return router
 

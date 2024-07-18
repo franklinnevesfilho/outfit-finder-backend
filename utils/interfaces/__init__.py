@@ -1,3 +1,3 @@
 from .router import Router
 from .service import Service
-from .validate import Validator
+from .s3 import S3

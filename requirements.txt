@@ -1,8 +1,11 @@
 cryptography==42.0.8
-fastapi==0.111.0
+fastapi==0.111.1
+joblib==1.4.2
+minio==7.2.7
+pandas==2.2.2
 pydantic==2.8.2
 PyJWT==2.8.0
 PyJWT==2.8.0
+scikit_learn==1.5.1
 SQLAlchemy==2.0.31
 typing_extensions==4.12.2
-minio~=7.2.7

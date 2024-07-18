@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Depends
-from typing import Annotated
-from models import *
-from utils.database import Database
+from fastapi import FastAPI
+from utils import Database, S3Factory
 from routers import register_routers
 from services import register_services
 from config import *
+
 
 app = FastAPI()
 
@@ -17,6 +16,15 @@ database = Database(
     DATABASE_PASSWORD,
     DATABASE_NAME)
 
+s3 = S3Factory.get_s3(
+    S3_TYPE,
+    S3_HOST_URL,
+    S3_ACCESS_KEY,
+    S3_SECRET_KEY,
+    {
+        'secure': False
+    })
+
 
 # Dependency to get a database session
 def get_db_session():
@@ -28,6 +36,6 @@ def get_db_session():
 
 
 # Register services with a database session
-services = register_services(next(get_db_session()))
+services = register_services(next(get_db_session()), s3)
 
 register_routers(app, services)

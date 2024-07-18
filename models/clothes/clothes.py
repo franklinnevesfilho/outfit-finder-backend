@@ -17,17 +17,10 @@ the Clothes consists of:
     - style: the style of the clothes
     - pattern: the pattern of the clothes
     - fabric: the fabric of the clothes
-    - colors: the colors of the clothes
+    - color: the color of the clothes
     
 @Author: Franklin Neves Filho
 """
-
-
-clothes_color_association = Table(
-    'clothes_colors', Base.metadata,
-    Column('clothes_id', Integer, ForeignKey('Clothes.id')),
-    Column('color_id', Integer, ForeignKey('Color.id'))
-)
 
 
 class Clothes(Base):
@@ -35,21 +28,23 @@ class Clothes(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('User.id'))
-    user = relationship("User", back_populates="clothes")
+    name = Column(String(50), unique=True, index=True)
     image_url = Column(String(100), unique=True, index=True)
+    user = relationship("User", back_populates="clothes")
     category = Column(String(50), ForeignKey('Category.name'))
     style = Column(String(50), ForeignKey('Style.name'))
     pattern = Column(String(50), ForeignKey('Pattern.name'))
     fabric = Column(String(50), ForeignKey('Fabric.name'))
-    colors = relationship('Color', secondary=clothes_color_association)
+    color = Column(String(50), ForeignKey('Color.name'))
 
 
 # Pydantic model for creating a clothes
 class CreateClothes(BaseModel):
     user_id: int
+    name: str
     image_url: str
     category: str
     style: str
     pattern: str
     fabric: str
-    colors: list[int]
+    color: str
