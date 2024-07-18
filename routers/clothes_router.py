@@ -60,4 +60,24 @@ class ClothesRouter(Router):
         async def update(clothes_id: int, clothes: CreateClothes):
             return clothes_service.update(clothes_id, clothes)
 
+        @router.get("/all-styles")
+        async def get_styles():
+            return clothes_service.get_all_styles()
+
+        @router.get("/all-categories")
+        async def get_types():
+            return clothes_service.get_all_categories()
+
+        @router.get("/all-colors")
+        async def get_colors():
+            return clothes_service.get_all_colors()
+
+        @router.get("/all-fabrics")
+        async def get_fabrics():
+            return clothes_service.get_all_fabrics()
+
+        @router.get("/all-patterns")
+        async def get_patterns():
+            return clothes_service.get_all_patterns()
+
         return router

@@ -31,6 +31,48 @@ class OutfitService(Service):
         super().__init__(db)
         self.jwt = JwtService()
 
+    def get_all_usages(self) -> Response:
+        """
+        Get all usages
+        :return: {
+            node: List[Usage],
+            errors: List[str]
+        }
+        """
+        usages = self.db.query(Usage).all()
+        if not usages:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=usages)
+
+    def get_all_seasons(self) -> Response:
+        """
+        Get all seasons
+        :return: {
+            node: List[Season],
+            errors: List[str]
+        }
+        """
+        seasons = self.db.query(Season).all()
+        if not seasons:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=seasons)
+
+    def get_all_weathers(self) -> Response:
+        """
+        Get all weathers
+        :return: {
+            node: List[Weather],
+            errors: List[str]
+        }
+        """
+        weathers = self.db.query(Weather).all()
+        if not weathers:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=weathers)
+
     def get_user_outfits(self, token: str) -> Response:
         """
         Get all outfits from a user

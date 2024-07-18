@@ -32,8 +32,86 @@ class ClothesService(Service):
         super().__init__(db)
         self.jwt = JwtService()
 
-    def get_user_clothes(self, token: str) -> Response:
+    def get_all_colors(self) -> Response:
+        """
+        Get all colors
+        :return: {
+            node: List[Color],
+            errors: List[str]
+        }
+        """
 
+        colors = self.db.query(Color).all()
+        if not colors:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=colors)
+
+    def get_all_styles(self) -> Response:
+        """
+        Get all styles
+        :return: {
+            node: List[Style],
+            errors: List[str]
+        }
+        """
+        styles = self.db.query(Style).all()
+        if not styles:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=styles)
+
+    def get_all_categories(self) -> Response:
+        """
+        Get all categories
+        :return: {
+            node: List[Category],
+            errors: List[str]
+        }
+        """
+        categories = self.db.query(Category).all()
+        if not categories:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=categories)
+
+    def get_all_patterns(self) -> Response:
+        """
+        Get all patterns
+        :return: {
+            node: List[Pattern],
+            errors: List[str]
+        }
+        """
+        patterns = self.db.query(Pattern).all()
+        if not patterns:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=patterns)
+
+    def get_all_fabrics(self) -> Response:
+        """
+        Get all fabrics
+        :return: {
+            node: List[Fabric],
+            errors: List[str]
+        }
+        """
+        fabrics = self.db.query(Fabric).all()
+        if not fabrics:
+            return ResponseFactory.generate_not_found_response()
+
+        return ResponseFactory.generate_ok_response(node=fabrics)
+
+    def get_user_clothes(self, token: str) -> Response:
+        """
+        Get all clothes from a user
+        :param token: str
+        :return: {
+            node: List[Clothes],
+            errors: List[str]
+        }
+        """
         user_id = self.jwt.decode_token(token)['user_id']
         logger.info(f"User ID: {user_id}")
 
@@ -45,12 +123,27 @@ class ClothesService(Service):
         return ResponseFactory.generate_ok_response(node=clothes)
 
     def get_by_id(self, item_id: int) -> Response:
+        """
+        Get clothes by id
+        :param item_id: int
+        :return: {
+            node: Clothes,
+            errors: List[str]
+        }
+        """
         clothes = self.db.query(Clothes).get(item_id)
         if clothes is None:
             return ResponseFactory.generate_not_found_response()
         return ResponseFactory.generate_ok_response(node=clothes)
 
     def get_all(self) -> Response:
+        """
+        Get all clothes
+        :return: {
+            node: List[Clothes],
+            errors: List[str]
+        }
+        """
         clothes = self.db.query(Clothes).options(joinedload(Clothes.colors)).all()
         if not clothes:
             return ResponseFactory.generate_not_found_response()
@@ -58,6 +151,14 @@ class ClothesService(Service):
         return ResponseFactory.generate_ok_response(node=clothes)
 
     def create(self, data: CreateClothes) -> Response:
+        """
+        Create a new clothes
+        :param data: CreateClothes
+        :return: {
+            node: Clothes,
+            errors: List[str]
+        }
+        """
         # Check if style exists
         style_exists = self.db.query(Style).filter(Style.name == data.style).first()
         if not style_exists:
