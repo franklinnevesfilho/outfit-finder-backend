@@ -139,12 +139,12 @@ INSERT INTO Category (name) VALUES
 -- ('Other');
 
 
-CREATE TABLE IF NOT EXISTS Occasion(
+CREATE TABLE IF NOT EXISTS 'Usage'(
     id SMALLINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) UNIQUE NOT NULL
 );
 
-INSERT INTO Occasion (name) VALUES
+INSERT INTO 'Usage' (name) VALUES
                                 ('casual'),
                                 ('formal'),
                                 ('sports'),
@@ -229,12 +229,12 @@ CREATE TABLE IF NOT EXISTS Clothes(
 CREATE TABLE IF NOT EXISTS Outfit(
     id MEDIUMINT PRIMARY KEY AUTO_INCREMENT,
     user_id MEDIUMINT,
-    occasion VARCHAR(50),
+    'usage' VARCHAR(50),
     season VARCHAR(50),
     weather VARCHAR(50),
     FOREIGN KEY (user_id) REFERENCES User(id)
     ON DELETE CASCADE,
-    FOREIGN KEY (occasion) REFERENCES Occasion(name)
+    FOREIGN KEY ('usage') REFERENCES `Usage`(name)
     ON UPDATE CASCADE,
     FOREIGN KEY (season) REFERENCES Season(name)
     ON UPDATE CASCADE,

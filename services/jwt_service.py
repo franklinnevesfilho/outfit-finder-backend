@@ -1,6 +1,6 @@
 import jwt
 from datetime import datetime, timedelta
-from utils.security.jwt_key_generator import KeyGeneratorUtil
+from utils import KeyGeneratorUtil
 
 
 class JwtService:

@@ -12,7 +12,7 @@ There is a table which joins the clothes and outfits tables, called outfits_clot
 the Outfit consists of:
     - id: the id of the outfit
     - user_id: the id of the user that created the outfit
-    - occasion: the occasion for the outfit
+    - usage: the usage for the outfit
     - weather: the weather for the outfit
     - season: the season for the outfit
     - clothes: the clothes that are part of the outfit
@@ -34,7 +34,7 @@ class Outfit(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('User.id'))
     user = relationship("User", back_populates="outfits")
-    occasion = Column(String(100), ForeignKey('Occasion.name'))
+    usage = Column(String(100), ForeignKey('Usage.name'))
     weather = Column(String(100), ForeignKey('Weather.name'))
     season = Column(String(100), ForeignKey('Season.name'))
     clothes = relationship("Clothes", secondary=outfit_clothes_association)
@@ -42,7 +42,7 @@ class Outfit(Base):
 
 class CreateOutfit(BaseModel):
     user_id: int
-    occasion: str
+    usage: str
     season: str
     weather: str
     clothes: list[int]

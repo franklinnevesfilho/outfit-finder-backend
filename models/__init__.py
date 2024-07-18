@@ -15,6 +15,6 @@ __all__ = [
     'Clothes', 'CreateClothes',
     'Category', 'Style', 'Pattern', 'Fabric', 'Color',
     'Outfit', 'CreateOutfit',
-    'Occasion', 'Season', 'Weather',
+    'Usage', 'Season', 'Weather',
     'Base',
 ]

@@ -1,10 +1,10 @@
 from .outfit import Outfit, CreateOutfit
-from .occasion import Occasion
+from .usage import Usage
 from .season import Season
 from .weather import Weather
 
 
 __all__ = [
     'Outfit', 'CreateOutfit',
-    'Occasion', 'Season', 'Weather',
+    'Usage', 'Season', 'Weather',
 ]

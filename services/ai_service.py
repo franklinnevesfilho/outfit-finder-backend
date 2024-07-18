@@ -28,7 +28,7 @@ class AIService:
         'scaler': None
     }
 
-    def __init__(self, s3: S3=None):
+    def __init__(self, s3: S3 = None):
         logger.info("AI Service created")
         AIService._s3 = s3
         AIService.__load_models()
@@ -42,33 +42,34 @@ class AIService:
         :return: None
         """
         model_bucket = 'models'
+
         if not AIService._s3:
             logger.error("S3 not initialized")
-            return
-        models = AIService._s3.list_objects(model_bucket)
-        # Check if the models are already loaded
-        if all(AIService._models.values()):
-            logger.info("Models already loaded")
-            return
+        else:
+            if not all(AIService._models.values()):
+                logger.info("Loading models")
 
-        for model in models:
-            # download the model from the s3 bucket
-            AIService._s3.download_file(model_bucket, model.object_name, f'/tmp/{model.object_name}')
+                models = AIService._s3.list_objects(model_bucket)
 
-            if model.object_name == 'knn.pkl':
-                AIService._models['knn'] = joblib.load(f'/tmp/{model.object_name}')
+                try:
+                    for model in models:
+                        # download the model from the s3 bucket
+                        AIService._s3.download_file(model_bucket, model.object_name, f'/tmp/{model.object_name}')
 
-            elif model.object_name == 'label_encoders.pkl':
-                AIService._models['label_encoders'] = joblib.load(f'/tmp/{model.object_name}')
+                    AIService._models['knn'] = joblib.load('/tmp/knn.joblib')
+                    AIService._models['label_encoders'] = joblib.load('/tmp/label_encoders.joblib')
+                    AIService._models['scaler'] = joblib.load('/tmp/scaler.joblib')
+                    logger.info("Models loaded successfully")
 
-            elif model.object_name == 'scaler.pkl':
-                AIService._models['scaler'] = joblib.load(f'/tmp/{model.object_name}')
+                    for model in models:
+                        os.remove(f'/tmp/{model.object_name}')
 
-        logger.info("Models loaded successfully")
-        # delete the files from the /tmp directory
-        for model in models:
-            os.remove(f'/tmp/{model.object_name}')
-        logger.info("Models deleted from /tmp directory")
+                    logger.info("Models deleted from /tmp directory")
+
+                except FileNotFoundError:
+                    logger.info("Models not found in /tmp directory")
+            else:
+                logger.info("Models already loaded")
 
     @staticmethod
     def get_models():
@@ -92,36 +93,56 @@ class AIService:
             AIService.__load_models()
 
         clothes = user.clothes
-        print(clothes)
+        if not clothes:
+            logger.error("User has no clothes")
+            return []
 
+        # create a dataframe with the clothes
+        clothes_df = pd.DataFrame([
+            {
+                'gender': user.gender,
+                'category': cloth.category,
+                'style': cloth.style,
+                'color': cloth.color,
+                'season': 'summer'
+            } for cloth in clothes
+        ])
 
-        # drop_columns = ['id', 'user_id', 'image_url', 'pattern', 'fabric']
-        # clothes_df.drop(columns=drop_columns, inplace=True)
+        # print to visualize the dataframe
+        for column in clothes_df.columns:
+            print(column)
+            print(clothes_df[column])
 
-        # # Load the models
-        # knn: KNeighborsClassifier = AIService._models['knn']
-        # label_encoders: dict[str, LabelEncoder] = AIService._models['label_encoders']
-        # scaler: StandardScaler = AIService._models['scaler']
-        #
-        # # encode and Transform the data
-        # for column in clothes_df.columns:
-        #     clothes_df[column] = label_encoders[column].transform(clothes_df[column])
-        #
-        # clothes_df = scaler.transform(clothes_df)
-        #
-        # # Get predictions
-        # predictions = knn.predict_proba(clothes_df)
-        #
-        # # get column index of the usage
-        # usage_index = label_encoders['usage'].transform([usage])[0]
-        #
-        # # get the clothes that have a probability greater than the threshold
-        clothes = []
-        # for i in range(len(predictions)):
-        #     if predictions[i][usage_index] > AIService.__probability:
-        #         clothes.append(clothes[i])
+        # Load the models
+        knn: KNeighborsClassifier = AIService._models['knn']
+        label_encoders: dict[str, LabelEncoder] = AIService._models['label_encoders']
+        scaler: StandardScaler = AIService._models['scaler']
 
-        return clothes
+        # Transform the data
+        for column in clothes_df.columns:
+            if column in label_encoders:
+                clothes_df[column] = label_encoders[column].transform(clothes_df[column])
+
+        clothes_df = scaler.transform(clothes_df)
+
+        # Predict the clothes
+        predictions = knn.predict_proba(clothes_df)
+        print(predictions)
+
+        # Select the clothes based on the usage
+
+        try:
+            user_usage = label_encoders['usage'].transform([usage])[0]
+        except KeyError:
+            logger.error("Usage not found")
+            return []
+
+        predicted_clothes = []
+        for i in range(len(predictions)):
+            if predictions[i][user_usage] > AIService.__probability:
+                predicted_clothes.append(clothes[i])
+
+        return predicted_clothes
 
 
 

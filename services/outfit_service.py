@@ -1,4 +1,4 @@
-from models import (Outfit, CreateOutfit, User, Clothes, Occasion, Season, Weather)
+from models import (Outfit, CreateOutfit, User, Clothes, Usage, Season, Weather)
 from .jwt_service import JwtService
 from typing import Type
 from utils import Service, Response, ResponseFactory
@@ -103,9 +103,9 @@ class OutfitService(Service):
             return ResponseFactory.generate_error_response(message="User does not exist")
 
         # Check if occasion exists
-        occasion_exists = self.db.query(Occasion).filter(Occasion.name == data.occasion).first()
+        occasion_exists = self.db.query(Usage).filter(Usage.name == data.usage).first()
         if not occasion_exists:
-            return ResponseFactory.generate_error_response(message="Occasion does not exist")
+            return ResponseFactory.generate_error_response(message="Usage does not exist")
 
         # Check if weather exists
         weather_exists = self.db.query(Weather).filter(Weather.name == data.weather).first()

@@ -39,7 +39,6 @@ class MinioService(S3):
     def list_buckets(self):
         try:
             buckets = self.client.list_buckets()
-            logger.info("Buckets listed successfully")
             return [bucket.name for bucket in buckets]
         except Exception as e:
             logger.error(f"Error listing buckets: {e}")

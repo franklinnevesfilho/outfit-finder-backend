@@ -129,6 +129,8 @@ class UserService(Service):
         if user is None:
             return ResponseFactory.generate_not_found_response(errors=["User not found"])
 
-        return AIService.predict(user, usage)
+        prediction = AIService.predict(user, usage)
+
+        return ResponseFactory.generate_ok_response(node=prediction)
 
 

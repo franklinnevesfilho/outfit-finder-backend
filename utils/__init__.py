@@ -13,8 +13,8 @@ __all__ = [
     'Router',
     'Service',
     'ResponseFactory',
-    'JwtService',
     'KeyGeneratorUtil',
     'S3',
     'S3Factory',
+    'SingletonMeta',
 ]
