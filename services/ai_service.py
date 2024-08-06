@@ -80,12 +80,13 @@ class AIService:
         return AIService._models[model_name]
 
     @staticmethod
-    def predict(user: User, usage: str) -> list:
+    def predict(user: User, usage: str, season: str) -> list:
         """
         Select clothes from the users closet based on the usage percentage
 
         :param user: User object
         :param usage: usage chosen by the user
+        :param season: season chosen by the user
         :return: list of clothes
         """
         if not all(AIService._models.values()):
@@ -104,7 +105,7 @@ class AIService:
                 'category': cloth.category,
                 'style': cloth.style,
                 'color': cloth.color,
-                'season': 'summer'
+                'season': season
             } for cloth in clothes
         ])
 
@@ -129,20 +130,22 @@ class AIService:
         predictions = knn.predict_proba(clothes_df)
         print(predictions)
 
-        # Select the clothes based on the usage
+        if usage == 'any':
+            return clothes
+        else:
+            # Select the clothes based on the usage
+            try:
+                user_usage = label_encoders['usage'].transform([usage])[0]
+            except KeyError:
+                logger.error("Usage not found")
+                return []
 
-        try:
-            user_usage = label_encoders['usage'].transform([usage])[0]
-        except KeyError:
-            logger.error("Usage not found")
-            return []
+            predicted_clothes = []
+            for i in range(len(predictions)):
+                if predictions[i][user_usage] > AIService.__probability:
+                    predicted_clothes.append(clothes[i])
 
-        predicted_clothes = []
-        for i in range(len(predictions)):
-            if predictions[i][user_usage] > AIService.__probability:
-                predicted_clothes.append(clothes[i])
-
-        return predicted_clothes
+            return predicted_clothes
 
 
 

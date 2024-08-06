@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 from utils import KeyGeneratorUtil
+from config import logger
 
 
 class JwtService:
@@ -18,8 +19,20 @@ class JwtService:
         :param data: dictionary with the data to be encoded
         :return: jwt token
         """
-        data['exp'] = datetime.utcnow() + timedelta(seconds=self.expire_time)
         return jwt.encode(data, self.private_key, algorithm=self.algorithm)
+
+    def isExpired(self, token: str) -> bool:
+        """
+        Check if a token is expired
+        :param token: jwt token
+        :return: True if the token is expired, False otherwise
+        """
+        try:
+            decoded = jwt.decode(token, self.public_key, algorithms=[self.algorithm])
+            return datetime.fromtimestamp(decoded['exp']) < datetime.now()
+        except Exception as e:
+            logger.error(f"Error decoding token: {e}")
+            return True
 
     def decode_token(self, token: str) -> dict:
         """
@@ -27,4 +40,8 @@ class JwtService:
         :param token: jwt token
         :return: dictionary with the decoded data
         """
-        return jwt.decode(token, self.public_key, algorithms=[self.algorithm])
+        try:
+            return jwt.decode(token, self.public_key, algorithms=[self.algorithm])
+        except Exception as e:
+            logger.error(f"Error decoding token: {e}")
+            return {}

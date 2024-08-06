@@ -38,6 +38,7 @@ class Outfit(Base):
     weather = Column(String(100), ForeignKey('Weather.name'))
     season = Column(String(100), ForeignKey('Season.name'))
     clothes = relationship("Clothes", secondary=outfit_clothes_association)
+    date_worn = Column(String(100))
 
 
 class CreateOutfit(BaseModel):
@@ -46,3 +47,4 @@ class CreateOutfit(BaseModel):
     season: str
     weather: str
     clothes: list[int]
+    date_worn: str

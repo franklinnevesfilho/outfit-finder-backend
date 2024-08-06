@@ -1,7 +1,7 @@
 from utils import Service, Response, ResponseFactory
 from .jwt_service import JwtService
 from .ai_service import AIService
-from models import User, CreateUser
+from models import User, CreateUser, ClothesPredictionRequest, Gender
 from pydantic import BaseModel
 
 
@@ -123,13 +123,18 @@ class UserService(Service):
                 gender=user.gender
             ))
 
-    def get_predictions(self, token: str, usage: str):
-        user_id = self.jwt.decode_token(token)['user_id']
+    def get_gender(self) -> Response:
+        genders = self.db.query(Gender).all()
+        return ResponseFactory.generate_ok_response(node=genders)
+
+    def get_predictions(self, predictionRequest: ClothesPredictionRequest):
+
+        user_id = self.jwt.decode_token(predictionRequest.token)['user_id']
         user = self.db.query(User).get(user_id)
         if user is None:
             return ResponseFactory.generate_not_found_response(errors=["User not found"])
 
-        prediction = AIService.predict(user, usage)
+        prediction = AIService.predict(user, predictionRequest.usage, predictionRequest.season)
 
         return ResponseFactory.generate_ok_response(node=prediction)
 

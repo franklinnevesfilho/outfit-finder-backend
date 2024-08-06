@@ -61,15 +61,15 @@ class OutfitRouter(Router):
         async def update(outfit_id: int, outfit: CreateOutfit):
             return outfit_service.update(outfit_id, outfit)
 
-        @router.get("/all-usages")
+        @router.get("/usages")
         async def get_usages():
             return outfit_service.get_all_usages()
 
-        @router.get("/all-weathers")
+        @router.get("/weathers")
         async def get_weathers():
             return outfit_service.get_all_weathers()
 
-        @router.get("/all-seasons")
+        @router.get("/seasons")
         async def get_seasons():
             return outfit_service.get_all_seasons()
 

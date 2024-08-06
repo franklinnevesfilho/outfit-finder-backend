@@ -1,6 +1,7 @@
 from .user import *
 from .clothes import *
 from .outfits import *
+from .prediction import *
 from .base import Base
 
 """
@@ -16,5 +17,5 @@ __all__ = [
     'Category', 'Style', 'Pattern', 'Fabric', 'Color',
     'Outfit', 'CreateOutfit',
     'Usage', 'Season', 'Weather',
-    'Base',
+    'Base', 'ClothesPredictionRequest', 'Gender'
 ]

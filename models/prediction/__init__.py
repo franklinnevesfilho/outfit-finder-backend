@@ -1,0 +1,1 @@
+from .clothes_prediction import ClothesPredictionRequest

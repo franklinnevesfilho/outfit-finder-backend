@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from services import UserService, AIService
+from models import ClothesPredictionRequest
 from utils import Router
 
 
@@ -30,7 +31,6 @@ class UserRouter(Router):
             tags=["user"]
         )
         user_service: UserService = self.getService("user_service")
-        ai_service: AIService = self.getService("ai_service")
 
         @router.get("/")
         async def read_root():
@@ -46,9 +46,13 @@ class UserRouter(Router):
             email = body['email']
             return {"email": email}
 
-        @router.get("/get-prediction/{usage}/{token}")
-        async def get_prediction(usage: str, token: str):
-            return user_service.get_predictions(token, usage)
+        @router.get("/genders")
+        async def get_gender():
+            return user_service.get_gender()
+
+        @router.post("/clothes-prediction")
+        async def get_prediction(predictionRequest: ClothesPredictionRequest):
+            return user_service.get_predictions(predictionRequest)
 
         return router
 

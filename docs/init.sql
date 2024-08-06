@@ -232,6 +232,7 @@ CREATE TABLE IF NOT EXISTS Outfit(
     'usage' VARCHAR(50),
     season VARCHAR(50),
     weather VARCHAR(50),
+    date_worn DATE DEFAULT CURRENT_DATE,
     FOREIGN KEY (user_id) REFERENCES User(id)
     ON DELETE CASCADE,
     FOREIGN KEY ('usage') REFERENCES `Usage`(name)
