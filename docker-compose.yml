@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  main_service:
+    build: ./main-service
+    container_name: main_service
+    depends_on:
+      - auth_service
+    networks:
+      - main_network
+    environment:
+      - AUTH_SERVICE_URL=http://auth_service:8000
+    ports:
+      - "8000:8000"
+
+  auth_service:
+    build: ./auth-service
+    container_name: auth_service
+    depends_on:
+      - auth_db
+    networks:
+      - main_network
+    environment:
+      - DATABASE_URL=mysql://root:root@auth_db:3306/auth
+
+  auth_db:
+    image: mysql:5.7
+    container_name: auth_db
+    networks:
+      - main_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=auth
+
+networks:
+  main_network:
+    driver: bridge
