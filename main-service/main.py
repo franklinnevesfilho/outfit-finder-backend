@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Request, HTTPException
+from franklin_fastapi_extension import API, Query
+from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from logger import logger
 import httpx
 import os
 
-app = FastAPI()
+app = API()
 
 # Define the base URLs for your microservices
 services = {
@@ -12,7 +14,7 @@ services = {
 
 
 # Generic forwarding function
-async def forward_request(service_url: str, path:str, request: Request):
+async def forward_request(service_url: str, path:str, request: Query):
     async with httpx.AsyncClient() as client:
         url = f"{service_url}/{path}"
         headers = request.headers
@@ -35,7 +37,7 @@ async def forward_request(service_url: str, path:str, request: Request):
 
 # Route traffic based on the endpoint prefix
 @app.api_route("/{service}/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def gateway(service: str, path: str, request: Request):
+async def gateway(service: str, path: str, request: Query):
     service_url = services.get(service)
     if not service_url:
         raise HTTPException(status_code=404, detail="Service not found")
@@ -44,7 +46,13 @@ async def gateway(service: str, path: str, request: Request):
     # Forward the request to the appropriate service
     response = await forward_request(service_url, path, request)
 
-    return response.content, response.status_code, response.headers.items()
+    try:
+        # Attempt to parse the response content as JSON
+        content = response.json()
+        return JSONResponse(content=content, status_code=response.status_code, headers=dict(response.headers))
+    except ValueError:
+        # If the response is not JSON, return it as-is
+        return response.content, response.status_code, response.headers.items()
 
 
 if __name__ == "__main__":
