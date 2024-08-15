@@ -1,7 +1,7 @@
 from logger import logger
 from services import jwt_service
 from franklin_fastapi_extension import POST, GET, Query, request
-from dto import RefreshToken
+from dto import Token
 
 """
 Token management routes.
@@ -21,7 +21,7 @@ The routes are:
 @POST("/refresh")
 async def refresh_token(query: Query):
     logger.info("Refreshing a token")
-    return await request.call(jwt_service.refresh_token, query, RefreshToken)
+    return await request.call(jwt_service.refresh_token, query, Token)
 
 @POST("/revoke")
 async def revoke_token():

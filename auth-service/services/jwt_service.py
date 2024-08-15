@@ -1,6 +1,8 @@
+from franklin_fastapi_extension import Response
 import jwt
 import time
 from logger import logger
+from dto import Token
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
@@ -113,43 +115,28 @@ def verify(token: str) -> dict | None:
         logger.error(f"Error verifying token: {e}")
         return None
 
-def refresh_token(token: str, headers: dict | None = None) -> str | None:
+def refresh_token(refreshToken: Token) -> Response:
     """
-    Refresh the JWT token by generating a new one with the same payload but a new expiration time.
-    :param token: the expired or about-to-expire JWT token
-    :param headers: optional dictionary with additional JWT headers
-    :return: refreshed token as a string or None if an error occurs
+    Refresh a JWT token by generating a new one with the same payload but a new expiration time.
+    :param refreshToken: DTO with the token to refresh
+    :return: string with the new token or None if an error occurs
     """
-    if _keys["private"] is None:
-        logger.error("Private key not found")
-        return None
+    if refreshToken.token is None:
+        logger.error("Token not found")
+        return Response(errors={"message": "Token not found"})
 
-    try:
-        # Decode the token without verifying expiration to extract the payload
-        payload = jwt.decode(token, _keys["public"], algorithms=["RS256"], options={"verify_exp": False})
+    payload = verify(refreshToken.token)
+    if payload is None:
+        logger.error("Invalid token")
+        return Response(errors={"message": "Invalid token"})
 
-        # Update the expiration time in the payload
-        payload["exp"] = time.time() + 3600  # Token expiration (1 hour from now)
+    new_token = encode(payload)
+    if new_token is None:
+        logger.error("Error refreshing token")
+        return Response(errors={"message": "Error refreshing token"})
 
-        # Default headers can be added or overridden by passing a headers dict
-        jwt_headers = _jwt_headers.copy()
-        if headers:
-            jwt_headers.update(headers)
-
-        # Encode the new JWT with the updated payload and headers
-        new_token = jwt.encode(payload, _keys["private"], algorithm='RS256', headers=jwt_headers)
-        logger.info("Token refreshed successfully")
-        return new_token
-
-    except jwt.ExpiredSignatureError:
-        logger.error("Token has expired and cannot be refreshed")
-        return None
-    except jwt.InvalidTokenError:
-        logger.error("Invalid token provided")
-        return None
-    except Exception as e:
-        logger.error(f"Error refreshing token: {e}")
-        return None
+    logger.info("Token refreshed successfully")
+    return Response(node={"token": new_token})
 
 
 def get_public_key() -> str | None:
