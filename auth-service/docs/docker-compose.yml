@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  auth-service:
+    image: auth-service
+    build:
+      context: ..
+      dockerfile: docs/Dockerfile
+    ports:
+      - "8080:8000"
+    environment:
+      - DB_TYPE=mysql
+      - DB_HOST=mySQL  # This should match the service name of the MySQL container
+      - DB_PORT=3306   # Standard MySQL port
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=auth
+      - SECRET_KEY=secret
+      - ALLOWED_HOSTS=*
+    depends_on:
+      - mySQL
+    networks:
+      - auth-service-network
+
+  mySQL:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - auth-service-network
+
+volumes:
+  mysql-data:
+
+networks:
+  auth-service-network:
+    driver: bridge
